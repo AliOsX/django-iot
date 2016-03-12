@@ -43,7 +43,7 @@ client.configure_devices()
 
 to use management commands:
 ```
-
+heroku addons:create scheduler:standard
 ```
 
 
