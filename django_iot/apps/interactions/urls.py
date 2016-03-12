@@ -3,8 +3,7 @@ from django_iot.apps.interactions import views
 
 
 urlpatterns = [
-    url(r'^interactions/pull_status[/]', views.PullStatus.as_view(), name='pull-status'),
-    url(r'^interactions/set_status[/]', views.SetStatus.as_view(), name='set-status'),
-    url(r'^interactions/pull_data[/]', views.PullData.as_view(), name='pull-data'),
-    url(r'^interactions/set_attributes[/]', views.SetAttributes.as_view(), name='set-attributes'),
+    url(r'^set_status[/]', views.SetStatus.as_view(), name='set-status'),
+    url(r'^refresh[/]', views.Refresh.as_view(), name='refresh'),
+    url(r'^set_color[/]', views.SetColor.as_view(), name='set-color'),
 ]

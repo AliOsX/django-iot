@@ -1,6 +1,7 @@
 celery
 colour
 dj-database-url==0.4.0
+django-bootstrap3
 djangorestframework
 django-filter
 Django==1.9.2

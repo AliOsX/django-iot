@@ -39,15 +39,27 @@ def configure_devices():
     return results
 
 
+def make_request(url, method='get', data=None):
+    # make and parse request
+    response = getattr(requests, method)(url, data=data, headers=HEADERS)
+    json_data = response.json()
+
+    # error
+    if 'error' in json_data.keys():
+        raise RuntimeError(json_data['error'])
+
+    # return
+    return json_data
+
+
 def get_observations(device_pk):
     """Get dict of numerical observations"""
     # make request
     selector = 'id:%s' % Device.objects.get(pk=device_pk).manufacturer_id
     url = BASE_URL + selector
-    response = requests.get(url, headers=HEADERS)
+    data = make_request(url)[0]
 
     # assemble result
-    data = response.json()[0]
     result = {
         'brightness': data['brightness'],
         'hue': data['color']['hue'],
@@ -70,10 +82,9 @@ def get_status(device_pk):
     # make request
     selector = 'id:%s' % Device.objects.get(pk=device_pk).manufacturer_id
     url = BASE_URL + selector
-    response = requests.get(url, headers=HEADERS)
+    data = make_request(url)[0]
 
-    # assemble result
-    data = response.json()[0]
+    # return
     return data['power']
 
 
@@ -81,13 +92,13 @@ def set_status(device_pk, payload):
     # make request
     selector = 'id:%s' % Device.objects.get(pk=device_pk).manufacturer_id
     url = BASE_URL + selector + '/state'
-    response = requests.put(url, data=payload, headers=HEADERS)
+    data = make_request(url, method='put', data=payload)
 
     # return
     try:
-        return response.json()['results'][0]
+        return data['results'][0]
     except KeyError:
-        return response.json()
+        return data
 
 
 def breathe(device_pk,
@@ -105,10 +116,10 @@ def breathe(device_pk,
     # make request
     selector = 'id:%s' % Device.objects.get(pk=device_pk).manufacturer_id
     url = BASE_URL + selector + '/effects/breathe'
-    response = requests.post(url, data=payload, headers=HEADERS)
+    data = make_request(url, method='post', data=payload)
 
     # return
-    return response.json()['results'][0]
+    return data['results'][0]
 
 
 def turn_on(device_pk):

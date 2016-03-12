@@ -39,6 +39,7 @@ INSTALLED_APPS = (
 
     # third party
     'rest_framework',
+    'bootstrap3',
 
     # local apps
     'django_iot.apps.devices',

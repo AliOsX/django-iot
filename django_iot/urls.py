@@ -27,6 +27,6 @@ router.register(r'statuses', PowerStatusViewSet)
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(router.urls)),
-    url(r'^api/', include('django_iot.apps.interactions.urls')),
+    url(r'^interactions/', include('django_iot.apps.interactions.urls')),
     url(r'^devices/', include('django_iot.apps.devices.urls')),
 ]
