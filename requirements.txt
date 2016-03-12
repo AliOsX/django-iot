@@ -1,7 +1,7 @@
 celery
 dj-database-url==0.4.0
 djangorestframework
-django-filters
+django-filter
 Django==1.9.2
 gunicorn==19.4.5
 mock
