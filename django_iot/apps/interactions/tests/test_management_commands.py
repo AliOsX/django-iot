@@ -48,7 +48,7 @@ class TestPullData(TestCase):
 
     @patch('django_iot.apps.interactions.tasks.client.get_observations')
     def test_pull_one(self, mock_method):
-        mock_method.return_value = {'dummy': 15}
+        mock_method.return_value = {'dummy': 15, 'hexcolor': '#000'}
         # call command for one
         call_command('pull_data',
                      str(self.device1.pk),
@@ -60,7 +60,9 @@ class TestPullData(TestCase):
 
     @patch('django_iot.apps.interactions.tasks.client.get_observations')
     def test_pull_two(self, mock_method):
-        mock_method.return_value = {'dummy': 15}
+        # use function because key gets popped on first call
+        mock_method.side_effect = lambda x: {'dummy': 15, 'hexcolor': '#000'}
+
         # call command for both
         call_command('pull_data',
                      str(self.device1.pk), str(self.device2.pk),
@@ -112,7 +114,7 @@ class TestSetAttributes(TestCase):
             'id': self.device1.pk,
             'status': 'ok',
         }
-        mock_get.return_value = {'dummy': 10}
+        mock_get.return_value = {'dummy': 10, 'hexcolor': '#000'}
 
         # call command for one
         call_command('set_attributes',

@@ -11,10 +11,20 @@
 
 <h1>{{ object.name }}</h1>
 
-<h2>Status: <span id='status-message'></span></h2>
-<p>
-	<small>Last refreshed at <span id='status-refresh-time'></span></small>
-</p>
+<h2>Light is {{ status_message }}</h2>
+{% if status_time %}
+	<p><small>Last refreshed at {{ status_time }}</small></p>
+{% endif %}
+
+<ul class="list-group">
+{% for color in object.color_set.all reversed %}
+	<li class="list-group-item" style="background-color: {{ color.hex_string }}">
+		{{ color.hex_string }} at {{ color.valid_at }}
+	</li>
+{% empty %}
+	<li class="list-group-item">( no colors to show )</li>
+{% endfor %}
+</ul>
 
 <div id="chart-hue"></div>
 <div id="chart-saturation"></div>

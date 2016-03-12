@@ -36,7 +36,11 @@ class TestGetObservations(TestCase):
     def test_get(self):
         result = client.get_observations(self.device.pk)
         self.assertItemsEqual(result.keys(),
-                              ['brightness', 'hue', 'saturation', 'kelvin'])
+                              ['brightness', 'hue', 'saturation', 'kelvin', 'hexcolor'])
+        self.assertEqual(result['hexcolor'][0], '#')
+        for char in result['hexcolor'][1:]:
+            self.assertIn(char, '0123456789abcdef')
+        self.assertLessEqual(len(result['hexcolor']), 8)
 
 
 class TestGetStatus(TestCase):

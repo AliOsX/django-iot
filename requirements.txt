@@ -1,4 +1,5 @@
 celery
+colour
 dj-database-url==0.4.0
 djangorestframework
 django-filter

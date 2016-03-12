@@ -71,7 +71,7 @@ class TestPullData(APITestCase):
 
     @patch('django_iot.apps.interactions.tasks.client.get_observations')
     def test_post_response(self, mock_method):
-        mock_method.return_value = {'dummy': 15}
+        mock_method.return_value = {'dummy': 15, 'hexcolor': '#000'}
         response = self.client.post(self.url, self.data, format='json', follow=True)
         self.assertItemsEqual(response.data.keys(),
                               ['id', 'device', 'value', 'units', 'created_at', 'valid_at'])
@@ -104,7 +104,7 @@ class TestSetAttributes(APITestCase):
             'id': self.data['device_id'],
             'status': 'ok',
         }
-        mock_obs.return_value = {'dummy': 15}
+        mock_obs.return_value = {'dummy': 15, 'hexcolor': '#000'}
         response = self.client.post(self.url, self.data, format='json', follow=True)
         self.assertItemsEqual(response.data.keys(),
                               ['id', 'device', 'value', 'units', 'created_at', 'valid_at'])

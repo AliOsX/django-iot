@@ -15,6 +15,13 @@ def pull_data(device_id=None):
     # fetch observations
     data = client.get_observations(device_id)
 
+    # create color
+    hexcolor = data.pop('hexcolor')
+    device.color_set.create(
+        hex_string=hexcolor,
+        valid_at=timezone.now(),
+    )
+
     # create observations
     pks = []
     for units, value in data.iteritems():

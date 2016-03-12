@@ -38,3 +38,11 @@ class PowerStatus(BaseAttribute):
 
     def get_absolute_url(self):
         return reverse('powerstatus-detail', kwargs={'pk': self.pk})
+
+
+class Color(BaseAttribute):
+    # hex color
+    hex_string = models.CharField(max_length=7)
+
+    def get_absolute_url(self):
+        return reverse('color-detail', kwargs={'pk': self.pk})
