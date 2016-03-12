@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+
+<ol class="breadcrumb">
+  <li><a href="{% url 'device-list' %}">Devices</a></li>
+  <li class="active">Device {{ object.pk }}</li>
+</ol>
+
+
+<h1>{{ object.name }}</h1>
+
+<h2>Status: <span id='status-message'></span></h2>
+<p>
+	<small>Last refreshed at <span id='status-refresh-time'></span></small>
+</p>
+
+<div id="chart-hue"></div>
+<div id="chart-saturation"></div>
+<div id="chart-brightness"></div>
+<div id="chart-kelvin"></div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+// reload on ready
+$(function() {
+    reloadAll();
+});
+
+// reload everything
+function reloadAll() {
+	reloadStatus();
+	reloadAttributes();
+}
+
+function reloadStatus() {
+	displayLoadingStatus();
+	$.getJSON("{% url 'powerstatus-list' %}?device={{object.pk}}", function (resp) {
+		displayStatus(resp);
+	});
+}
+
+function reloadAttributes() {
+	$.getJSON("{% url 'attribute-list' %}?device={{object.pk}}", function (resp) {
+		displayAttributes(resp);
+	});
+}
+
+function displayAttributes(resp) {
+	// set up storage
+	var dataset = {
+		'hue': [],
+		'saturation': [],
+		'brightness': [],
+		'kelvin': []
+	};
+
+	// group results by units (and parse dates)
+	for (var i = 0; i < resp.results.length; i++) {
+		attr = resp.results[i];
+		attr.date = new Date(Date.parse(attr.valid_at));
+		dataset[attr.units].push(attr);
+	}
+
+	// draw each graph
+	for (datatype in dataset) {
+	    MG.data_graphic({
+	        title: datatype,
+	        data: dataset[datatype],
+	        width: 600,
+	        height: 200,
+	        right: 40,
+	        target: "#chart-" + datatype,
+	        x_accessor: "date",
+	        y_accessor: "value",
+	        linked: true
+	    });
+	}
+
+}
+
+function displayStatus(resp) {
+	var status = resp.results[0];
+	if (status.is_on) {
+		$("#status-message").html("on");
+	} else {
+		$("#status-message").html("off");
+	}
+	$("#status-refresh-time").html(status.valid_at);
+}
+
+function displayLoadingStatus(resp) {
+	$("#status-message").html("...");
+	$("#status-refresh-time").html("...");
+}
+
+
+</script>
+{% endblock %}
