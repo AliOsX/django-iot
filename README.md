@@ -25,7 +25,7 @@ click on Device and add a device
 or in a python terminal:
 
 ```
-from apps.lifx import client
+from django_iot.apps.lifx import client
 client.configure_devices()
 ```
 
