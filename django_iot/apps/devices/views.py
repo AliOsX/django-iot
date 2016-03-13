@@ -47,7 +47,6 @@ class DeviceDetailView(DetailView):
                 'btn_message': 'Change color',
             },
         ]
-        print context['forms']
 
         # return
         return context

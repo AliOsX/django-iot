@@ -1,8 +1,10 @@
 from django.utils import timezone
 from django_iot.apps.devices.models import Device
 from django_iot.apps.lifx import client
+from celery import shared_task, group
 
 
+@shared_task
 def pull_data(device_id=None):
     """
     Pulls observational data from the device vendor's API,
@@ -36,6 +38,7 @@ def pull_data(device_id=None):
     return pks
 
 
+@shared_task
 def pull_status(device_id=None):
     """
     Pulls the current device status from the device vendor's API,
@@ -62,6 +65,23 @@ def pull_status(device_id=None):
     return [status.pk]
 
 
+@shared_task
+def refresh_all():
+    """
+    Refreshes data and status for all devices
+    """
+    # list of pks
+    pks = Device.objects.all().values_list('pk', flat=True)
+
+    # status for each, executed in parallel
+    # http://docs.celeryproject.org/en/latest/userguide/canvas.html#groups
+    group(pull_status.s(pk) for pk in pks)()
+
+    # data for each
+    group(pull_data.s(pk) for pk in pks)()
+
+
+@shared_task
 def set_status(device_id=None, is_on=True):
     """
     Sets the device status using the device vendor's API,
@@ -91,6 +111,7 @@ def set_status(device_id=None, is_on=True):
         return []
 
 
+@shared_task
 def set_attributes(device_id=None, **kwargs):
     """
     Sets the device attributes using the device vendor's API,

@@ -70,3 +70,6 @@ heroku addons:create scheduler:standard
 * security features
 * mock tests
 * add LIFX to new wifi: https://support.lifx.com/hc/en-us/articles/204318224
+* import celery into __init__
+* schedule as own module
+* can't make schedule depend on database (if not using djcelery)
