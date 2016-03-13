@@ -25,7 +25,7 @@ class DeviceDetailView(DetailView):
             context['status_time'] = None
 
         # set up forms
-        context['forms'] = [
+        context['button_forms'] = [
             {
                 'form': interaction_forms.BaseInteractionForm(initial={'device_id': self.object.pk}),
                 'post_url': reverse('refresh'),
@@ -41,12 +41,13 @@ class DeviceDetailView(DetailView):
                 'post_url': reverse('set-status'),
                 'btn_message': 'Turn off',
             },
-            {
-                'form': interaction_forms.SetColorForm(initial={'device_id': self.object.pk}),
-                'post_url': reverse('set-color'),
-                'btn_message': 'Change color',
-            },
         ]
+
+        context['color_form'] = {
+            'form': interaction_forms.SetColorForm(initial={'device_id': self.object.pk}),
+            'post_url': reverse('set-color'),
+            'btn_message': 'Change color',
+        }
 
         # return
         return context

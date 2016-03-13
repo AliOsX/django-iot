@@ -10,7 +10,4 @@ class SetStatusForm(BaseInteractionForm):
 
 
 class SetColorForm(BaseInteractionForm):
-    color = forms.ChoiceField(choices=[
-        ('red', 'red'),
-        ('blue', 'blue'),
-    ])
+    color = forms.CharField(help_text="hex color, eg #fff or #001122")

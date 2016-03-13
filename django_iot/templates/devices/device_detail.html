@@ -18,7 +18,7 @@
 {% endif %}
 
 <div class="row">
-{% for form_info in forms %}
+	{% for form_info in button_forms %}
 	<div class="col-md-3">
 		<form action="{{ form_info.post_url }}" method="post" class="form">
 		    {% csrf_token %}
@@ -30,7 +30,18 @@
 		    {% endbuttons %}
 		</form>
 	</div>
-{% endfor %}
+	{% endfor %}
+	<div class="col-md-3">
+		<form action="{{ color_form.post_url }}" method="post" class="form">
+		    {% csrf_token %}
+		    {% bootstrap_form color_form.form %}
+		    {% buttons %}
+		        <button type="submit" class="btn btn-primary">
+		            {{ color_form.btn_message }}
+		        </button>
+		    {% endbuttons %}
+		</form>
+	</div>
 </div>
 
 <div class="panel panel-default">

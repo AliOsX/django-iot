@@ -45,7 +45,7 @@ def make_request(url, method='get', data=None):
     json_data = response.json()
 
     # error
-    if 'error' in json_data.keys():
+    if 'error' in json_data:
         raise RuntimeError(json_data['error'])
 
     # return

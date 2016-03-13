@@ -69,7 +69,13 @@ heroku addons:create scheduler:standard
 * POST to do interaction
 * security features
 * mock tests
-* add LIFX to new wifi: https://support.lifx.com/hc/en-us/articles/204318224
+* add LIFX to new wifi: reset (https://support.lifx.com/hc/en-us/articles/200468240-Hardware-Resetting-LIFX-Bulbs), add to wifi, then claim (https://support.lifx.com/hc/en-us/articles/203711234-Connecting-your-LIFX-to-the-Cloud)
 * import celery into __init__
 * schedule as own module
 * can't make schedule depend on database (if not using djcelery)
+
+celery resources:
+* https://www.cloudamqp.com/docs/celery.html
+* https://library.launchkit.io/three-quick-tips-from-two-years-with-celery-c05ff9d7f9eb#.e3a9mgoud
+* https://realpython.com/blog/python/asynchronous-tasks-with-django-and-celery/
+* https://devcenter.heroku.com/articles/celery-heroku#celery-and-django
