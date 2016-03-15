@@ -73,6 +73,8 @@ heroku addons:create scheduler:standard
 * import celery into __init__
 * schedule as own module
 * can't make schedule depend on database (if not using djcelery)
+* worker/scheduler dyno sleeps on free level!
+
 
 celery resources:
 * https://www.cloudamqp.com/docs/celery.html

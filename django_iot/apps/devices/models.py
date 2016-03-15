@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 
 
 class Device(models.Model):
@@ -22,3 +23,6 @@ class Device(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('device-detail', kwargs={'pk': self.pk})

@@ -1,15 +1,20 @@
 from django.views.generic.edit import FormView
 from django_iot.apps.interactions import tasks, forms
+from django_iot.apps.devices.models import Device
 
 
 class BaseInteractionView(FormView):
-    def form_valid(self, form):
-        print form.cleaned_data
+    template_name = 'interactions/form.html'
 
+    def form_valid(self, form):
         # run tasks
         for task_name in self.task_names:
             task = getattr(tasks, task_name)
             task(**form.cleaned_data)
+
+        # set success url using form data
+        device_id = form.cleaned_data['device_id']
+        self.success_url = Device.objects.get(pk=device_id).get_absolute_url()
 
         # return
         return super(BaseInteractionView, self).form_valid(form)

@@ -98,7 +98,6 @@ def set_status(device_id=None, is_on=True):
         result = client.turn_off(device_id)
 
     # create status
-    print result
     if result['status'] == 'ok':
         status = device.powerstatus_set.create(
             valid_at=timezone.now(),

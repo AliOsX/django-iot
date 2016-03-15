@@ -6,7 +6,7 @@ class BaseInteractionForm(forms.Form):
 
 
 class SetStatusForm(BaseInteractionForm):
-    is_on = forms.BooleanField(widget=forms.HiddenInput())
+    is_on = forms.BooleanField(widget=forms.HiddenInput(), required=False)
 
 
 class SetColorForm(BaseInteractionForm):

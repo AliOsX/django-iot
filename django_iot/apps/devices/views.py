@@ -37,7 +37,7 @@ class DeviceDetailView(DetailView):
                 'btn_message': 'Turn on',
             },
             {
-                'form': interaction_forms.SetStatusForm(initial={'device_id': self.object.pk, 'is_on': True}),
+                'form': interaction_forms.SetStatusForm(initial={'device_id': self.object.pk, 'is_on': False}),
                 'post_url': reverse('set-status'),
                 'btn_message': 'Turn off',
             },
