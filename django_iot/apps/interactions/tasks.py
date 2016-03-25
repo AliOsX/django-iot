@@ -2,10 +2,12 @@ from django.utils import timezone
 from django_iot.apps.devices.models import Device
 from django_iot.apps.lifx import client
 from celery import shared_task, group
+import tweepy
+import os
 
 
 @shared_task
-def pull_data(device_id=None):
+def pull_data(device_id=None, **kwargs):
     """
     Pulls observational data from the device vendor's API,
     stores the observations in the database,
@@ -39,7 +41,7 @@ def pull_data(device_id=None):
 
 
 @shared_task
-def pull_status(device_id=None):
+def pull_status(device_id=None, **kwargs):
     """
     Pulls the current device status from the device vendor's API,
     stores the status in the database,
@@ -66,23 +68,17 @@ def pull_status(device_id=None):
 
 
 @shared_task
-def refresh_all():
+def refresh_all(**kwargs):
     """
     Refreshes data and status for all devices
     """
-    # list of pks
-    pks = Device.objects.all().values_list('pk', flat=True)
-
-    # status for each, executed in parallel
-    # http://docs.celeryproject.org/en/latest/userguide/canvas.html#groups
-    group(pull_status.s(pk) for pk in pks)()
-
-    # data for each
-    group(pull_data.s(pk) for pk in pks)()
+    for device in Device.objects.all():
+        pull_status(device.pk)
+        pull_data(device.pk)
 
 
 @shared_task
-def set_status(device_id=None, is_on=True):
+def set_status(device_id=None, is_on=True, **kwargs):
     """
     Sets the device status using the device vendor's API,
     stores the new status in the database,
@@ -122,3 +118,33 @@ def set_attributes(device_id=None, **kwargs):
 
     # log by pulling fresh data
     return pull_data(device_id)
+
+
+@shared_task
+def run_twitter_vote(device_id=None, hashtag='#DjangoIoT',
+                     votechoices=[], **kwargs):
+    # set up twitter
+    auth = tweepy.OAuthHandler(
+        os.environ.get('TWITTER_CONSUMER_KEY'),
+        os.environ.get('TWITTER_CONSUMER_SECRET'))
+    auth.set_access_token(
+        os.environ.get('TWITTER_ACCESS_TOKEN'),
+        os.environ.get('TWITTER_ACCESS_SECRET'),
+    )
+    api = tweepy.API(auth)
+
+    # serach for hashtag
+    results = api.search(q=hashtag, rpp=100)
+
+    # collect votes
+    vote_counts = {choice: 0 for choice in votechoices}
+    for tweet in results:
+        for choice in votechoices:
+            if choice in tweet.text:
+                vote_counts[choice] += 1
+    top_choice, n_votes = max(vote_counts.iteritems(), key=lambda x: x[1])
+    print 'winner is %s with %d votes' % (top_choice, n_votes)
+    print 'full vote record:', vote_counts
+
+    # set color based on top vote
+    return set_attributes(device_id, color=top_choice, brightness=n_votes/100.0)

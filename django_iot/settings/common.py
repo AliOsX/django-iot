@@ -156,4 +156,5 @@ BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS ti
 CELERY_RESULT_BACKEND = None  # AMQP is not recommended as result backend as it creates thousands of queues
 CELERY_SEND_EVENTS = False  # Will not create celeryev.* queues
 CELERY_EVENT_QUEUE_EXPIRES = 60  # Will delete all celeryev. queues without consumers after 1 minute.
+BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'amqp://')
 ########## END CELERY CONFIGURATION
