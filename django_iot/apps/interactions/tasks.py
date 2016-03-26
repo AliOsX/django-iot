@@ -122,7 +122,13 @@ def set_attributes(device_id=None, **kwargs):
 
 @shared_task
 def run_twitter_vote(device_id=None, hashtag='#DjangoIoT',
-                     votechoices=[], **kwargs):
+                     votechoices=None,
+                     **kwargs):
+    # set up default choices
+    if not votechoices:
+        votechoices = ['white', 'red', 'orange', 'yellow',
+                       'cyan', 'green', 'blue', 'purple', 'pink']
+
     # set up twitter
     auth = tweepy.OAuthHandler(
         os.environ.get('TWITTER_CONSUMER_KEY'),
@@ -137,14 +143,18 @@ def run_twitter_vote(device_id=None, hashtag='#DjangoIoT',
     results = api.search(q=hashtag, rpp=100)
 
     # collect votes
+    print '*** votes! ***'
     vote_counts = {choice: 0 for choice in votechoices}
     for tweet in results:
         for choice in votechoices:
             if choice in tweet.text:
                 vote_counts[choice] += 1
+                print 'at %s %s voted for %s\t(%s)' % (tweet.created_at, tweet.user.screen_name, choice, tweet.text)
     top_choice, n_votes = max(vote_counts.iteritems(), key=lambda x: x[1])
+    print '*** end of votes! ***'
+    print ''
     print 'winner is %s with %d votes' % (top_choice, n_votes)
-    print 'full vote record:', vote_counts
+    print 'full vote tally:', vote_counts
 
     # set color based on top vote
     return set_attributes(device_id, color=top_choice, brightness=n_votes/100.0)
