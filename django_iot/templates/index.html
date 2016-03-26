@@ -11,13 +11,13 @@
 <div class="row">
 	<ul class="list-group">
 	{% for device in devices %}
-		<li class="list-group-item" style="background-color: {{ device.hex_string }}">
+		<li class="list-group-item" style="background-color: {{ device.color_hex }}">
 			<h3>{{ device.name }} in {{ device.location }}</h3>
 			<dl class="dl-horizontal">
 				<dt>power status</dt>
 				<dd><strong>{{ device.status_message }}</strong> <em>{{ device.status_time|timesince }} ago</em></dd>
 				<dt>color</dt>
-				<dd><strong>{{ device.hex_string }}</strong> <em>{{ device.color_time|timesince }} ago</em></dd>
+				<dd><strong>{{ device.color_name }}</strong> <em>{{ device.color_time|timesince }} ago</em></dd>
 				<dt>brightness</dt>
 				<dd><strong>{{ device.brightness }}%</strong> <em>{{ device.brightness_time|timesince }} ago</em></dd>
 			</dl>
@@ -30,13 +30,17 @@
 
 <div class="row">
 	<div class="well">
-		<h1>Tweet your vote with hashtag {{ vote.hashtag }}</h1>
-		<h3>Choices: {{ vote.choices|join:', ' }}</h3>
-		<h3>Example tweet: Muahaha imma vote twice {{ vote.choices|random }} {{ vote.choices|random }} {{ vote.hashtag }}</h3>
+		{% if vote_info.hashtag %}
+			<h1>Tweet your vote with hashtag {{ vote_info.hashtag }}</h1>
+			<h3>Choices: {{ vote_info.choices|join:', ' }}</h3>
+			<h3>Example tweet: Muahaha imma vote twice {{ vote_info.choices|random }} {{ vote_info.choices|random }} {{ vote_info.hashtag }}</h3>
+		{% else %}
+			<h1>Configure Twitter voting by setting environment variable <code>VOTE_HASHTAG</code></h1>
+		{% endif %}
 	</div>
 </div>
 
-{% if vote.tallies %}
+{% if vote %}
 <div class="row">
 	<div class="col-sm-3">
 		<dl class="dl-horizontal">

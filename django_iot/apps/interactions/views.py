@@ -2,11 +2,20 @@ from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django_iot.apps.devices.models import Device
 from django_iot.apps.interactions.models import TwitterVote
+from django_iot.apps.lifx import colors
+import os
 
 
 def home(request):
     # set up context
-    context = {'devices': [], 'vote': None}
+    context = {
+        'devices': [],
+        'vote': None,
+        'vote_info': {
+            'choices': TwitterVote.VOTE_CHOICE_LIST,
+            'hashtag': os.environ.get('VOTE_HASHTAG'),
+        }
+    }
 
     # collect info for devices
     for device in Device.objects.all():
@@ -28,11 +37,12 @@ def home(request):
             device_data['status_message'] = '[unknown]'
             device_data['status_time'] = None
 
-        # current color
+        # current attributes
         try:
-            current_color = device.color_set.latest('valid_at')
-            device_data['hex_string'] = current_color.hex_string
-            device_data['color_time'] = current_color.valid_at
+            current_hue = device.attribute_set.filter(units='hue').latest('valid_at')
+            device_data['color_name'] = colors.hue_to_color_name(current_hue.value)
+            device_data['color_hex'] = colors.NAME_TO_HEX[device_data['color_name']]
+            device_data['color_time'] = current_hue.valid_at
         except ObjectDoesNotExist:
             device_data['hexcolor'] = '[unknown]'
             device_data['color_time'] = None
@@ -41,7 +51,7 @@ def home(request):
         try:
             current_brightness = device.attribute_set.filter(units='brightness').latest('valid_at')
             device_data['brightness'] = int(current_brightness.value * 100)
-            device_data['brightness_time'] = current_color.valid_at
+            device_data['brightness_time'] = current_brightness.valid_at
         except ObjectDoesNotExist:
             device_data['brightness'] = '[unknown]'
             device_data['brightness_time'] = None
@@ -50,18 +60,14 @@ def home(request):
         context['devices'].append(device_data)
 
     # latest vote
-    context['vote'] = {
-        'choices': TwitterVote.VOTE_CHOICE_LIST,
-    }
     try:
         current_vote = TwitterVote.objects.latest('created_at')
         tally_count_list = [int(v) for v in current_vote.tally.split(',')]
         unsorted_tallies = zip(current_vote.VOTE_CHOICE_LIST, tally_count_list)
-        context['vote'].update({
+        context['vote'] = {
             'tallies': reversed(sorted(unsorted_tallies, key=lambda x: x[1])),
-            'hashtag': current_vote.hashtag,
             'log': current_vote.log.split(current_vote.LOG_LINE_SEP),
-        })
+        }
     except ObjectDoesNotExist:
         pass
 

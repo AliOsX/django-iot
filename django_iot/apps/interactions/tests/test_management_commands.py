@@ -35,7 +35,7 @@ class TestPullAttributes(TestCase):
 
     @patch('django_iot.apps.interactions.tasks.client.get_attributes')
     def test_pull_one(self, mock_method):
-        mock_method.return_value = {'dummy': 15, 'hexcolor': '#000'}
+        mock_method.return_value = {'dummy': 15}
         # call command for one
         call_command('interact', 'pull_attributes',
                      device_id=self.device1.pk,
@@ -88,7 +88,7 @@ class TestSetAttributes(TestCase):
             'id': self.device1.pk,
             'status': 'ok',
         }
-        mock_get.return_value = {'dummy': 10, 'hexcolor': '#000'}
+        mock_get.return_value = {'dummy': 10}
 
         # call command for one
         call_command('interact', 'set_attributes',
@@ -119,7 +119,7 @@ class TestTwitterVote(TestCase):
             'id': self.device1.pk,
             'status': 'ok',
         }
-        mock_get.return_value = {'dummy': 10, 'hexcolor': '#000'}
+        mock_get.return_value = {'dummy': 10}
 
         # call command for one
         call_command('interact', 'run_twitter_vote',

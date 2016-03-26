@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.conf import settings
 from unittest import skipIf
 from django_iot.apps.lifx import client
 from django_iot.apps.devices.models import Device
@@ -36,11 +37,7 @@ class TestGetAttributes(TestCase):
     def test_get(self):
         result = client.get_attributes(self.device.pk)
         self.assertItemsEqual(result.keys(),
-                              ['brightness', 'hue', 'saturation', 'kelvin', 'hexcolor'])
-        self.assertEqual(result['hexcolor'][0], '#')
-        for char in result['hexcolor'][1:]:
-            self.assertIn(char, '0123456789abcdef')
-        self.assertLessEqual(len(result['hexcolor']), 8)
+                              ['brightness', 'hue', 'saturation', 'kelvin'])
 
 
 class TestGetStatus(TestCase):
@@ -53,7 +50,7 @@ class TestGetStatus(TestCase):
         self.assertIn(result, ['on', 'off'])
 
 
-@skipIf(True, 'integration tests')
+@skipIf(settings.SKIP_INTEGRATION_TESTS, 'integration tests')
 class TestSetStatus(TestCase):
     def setUp(self):
         client.configure_devices()
@@ -84,7 +81,7 @@ class TestSetStatus(TestCase):
         self.assertEqual(result['status'], 'ok')
 
 
-@skipIf(True, 'integration tests')
+@skipIf(settings.SKIP_INTEGRATION_TESTS, 'integration tests')
 class TestEffects(TestCase):
     def setUp(self):
         client.configure_devices()

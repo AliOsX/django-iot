@@ -3,6 +3,7 @@ from django_iot.apps.devices.models import Device
 from django_iot.apps.lifx import client
 from django_iot.apps.interactions.models import TwitterVote
 from celery import shared_task
+import os
 
 
 @shared_task
@@ -17,13 +18,6 @@ def pull_attributes(device_id=None, **kwargs):
 
     # fetch attributes
     data = client.get_attributes(device_id)
-
-    # create color
-    hexcolor = data.pop('hexcolor')
-    device.color_set.create(
-        hex_string=hexcolor,
-        valid_at=timezone.now(),
-    )
 
     # create observations
     pks = []
@@ -120,8 +114,12 @@ def set_attributes(device_id=None, **kwargs):
 
 
 @shared_task
-def run_twitter_vote(device_id=None, hashtag='#DjangoIoT',
+def run_twitter_vote(device_id=None, hashtag=None,
                      **kwargs):
+    # use default hashtag if none given
+    if not hashtag:
+        hashtag = os.environ.get('VOTE_HASHTAG')
+
     # run voting
     voter = TwitterVote.objects.create(hashtag=hashtag)
     top_choice, brightness = voter.collect_votes()

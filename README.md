@@ -21,6 +21,7 @@ export TWITTER_CONSUMER_KEY=[your value]
 export TWITTER_CONSUMER_SECRET=[your value]
 export TWITTER_ACCESS_TOKEN=[your value]
 export TWITTER_ACCESS_SECRET=[your value]
+export VOTE_HASHTAG=[your hashtag]
 createdb mydbname
 python manage.py migrate
 python manage.py createsuperuser

@@ -1,7 +1,6 @@
 from django_iot.apps.devices.models import Device
 from os import environ
 import requests
-from .colors import hue_to_hex
 
 
 HEADERS = {
@@ -66,9 +65,6 @@ def get_attributes(device_pk):
         'saturation': data['color']['saturation'],
         'kelvin': data['color']['kelvin'],
     }
-
-    # add hex
-    result['hexcolor'] = hue_to_hex(result['hue'])
 
     # return
     return result
