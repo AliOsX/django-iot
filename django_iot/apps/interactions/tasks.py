@@ -74,7 +74,7 @@ def refresh_all(**kwargs):
     """
     for device in Device.objects.all():
         pull_status(device.pk)
-        pull_data(device.pk)
+        pull_attributes(device.pk)
 
 
 @shared_task
