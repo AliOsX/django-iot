@@ -3,7 +3,6 @@ from django.core.management import call_command
 from django_iot.apps.devices.models import Device
 from StringIO import StringIO
 from mock import patch
-from collections import namedtuple
 
 
 class TestPullStatus(TestCase):
@@ -27,18 +26,18 @@ class TestPullStatus(TestCase):
         self.assertEqual(self.device2.powerstatus_set.count(), 0)
 
 
-class TestPullData(TestCase):
+class TestPullAttributes(TestCase):
     def setUp(self):
         self.device1 = Device.objects.create(manufacturer_id=1)
         self.device2 = Device.objects.create(manufacturer_id=2)
 
         self.stdout = StringIO()
 
-    @patch('django_iot.apps.interactions.tasks.client.get_observations')
+    @patch('django_iot.apps.interactions.tasks.client.get_attributes')
     def test_pull_one(self, mock_method):
         mock_method.return_value = {'dummy': 15, 'hexcolor': '#000'}
         # call command for one
-        call_command('interact', 'pull_data',
+        call_command('interact', 'pull_attributes',
                      device_id=self.device1.pk,
                      stdout=self.stdout)
 
@@ -83,7 +82,7 @@ class TestSetAttributes(TestCase):
         self.stdout = StringIO()
 
     @patch('django_iot.apps.interactions.tasks.client.set_color')
-    @patch('django_iot.apps.interactions.tasks.client.get_observations')
+    @patch('django_iot.apps.interactions.tasks.client.get_attributes')
     def test_set_one(self, mock_get, mock_set):
         mock_set.return_value = {
             'id': self.device1.pk,
@@ -114,16 +113,13 @@ class TestTwitterVote(TestCase):
         self.stdout = StringIO()
 
     @patch('django_iot.apps.interactions.tasks.client.set_color')
-    @patch('django_iot.apps.interactions.tasks.client.get_observations')
-#    @patch('django_iot.apps.interactions.tasks.tweepy.api.search')
+    @patch('django_iot.apps.interactions.tasks.client.get_attributes')
     def test_set_one(self, mock_get, mock_set):
         mock_set.return_value = {
             'id': self.device1.pk,
             'status': 'ok',
         }
         mock_get.return_value = {'dummy': 10, 'hexcolor': '#000'}
-        # Tweet = namedtuple('Tweet', ['text'])
-        # mock_twitter.return_value = [Tweet('blue'), Tweet('blue'), Tweet('yellow')]
 
         # call command for one
         call_command('interact', 'run_twitter_vote',

@@ -7,17 +7,17 @@ import os
 
 
 @shared_task
-def pull_data(device_id=None, **kwargs):
+def pull_attributes(device_id=None, **kwargs):
     """
-    Pulls observational data from the device vendor's API,
-    stores the observations in the database,
-    and returns the pks of the observations.
+    Pulls attribute data from the device vendor's API,
+    stores the attributes in the database,
+    and returns the pks of the attributes.
     """
     # check device exists
     device = Device.objects.get(pk=device_id)
 
-    # fetch observations
-    data = client.get_observations(device_id)
+    # fetch attributes
+    data = client.get_attributes(device_id)
 
     # create color
     hexcolor = data.pop('hexcolor')
@@ -117,7 +117,7 @@ def set_attributes(device_id=None, **kwargs):
     client.set_color(device_id, **kwargs)
 
     # log by pulling fresh data
-    return pull_data(device_id)
+    return pull_attributes(device_id)
 
 
 @shared_task

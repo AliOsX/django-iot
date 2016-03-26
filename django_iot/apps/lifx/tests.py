@@ -28,13 +28,13 @@ class TestConfigure(TestCase):
         self.assertFalse(results[0][1])
 
 
-class TestGetObservations(TestCase):
+class TestGetAttributes(TestCase):
     def setUp(self):
         client.configure_devices()
         self.device = Device.objects.first()
 
     def test_get(self):
-        result = client.get_observations(self.device.pk)
+        result = client.get_attributes(self.device.pk)
         self.assertItemsEqual(result.keys(),
                               ['brightness', 'hue', 'saturation', 'kelvin', 'hexcolor'])
         self.assertEqual(result['hexcolor'][0], '#')

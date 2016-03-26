@@ -32,4 +32,4 @@ class SetColor(BaseInteractionView):
 
 class Refresh(BaseInteractionView):
     form_class = forms.BaseInteractionForm
-    task_names = ['pull_data', 'pull_status']
+    task_names = ['pull_attributes', 'pull_status']

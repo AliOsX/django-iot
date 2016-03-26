@@ -52,8 +52,8 @@ def make_request(url, method='get', data=None):
     return json_data
 
 
-def get_observations(device_pk):
-    """Get dict of numerical observations"""
+def get_attributes(device_pk):
+    """Get dict of numerical attributes"""
     # make request
     selector = 'id:%s' % Device.objects.get(pk=device_pk).manufacturer_id
     url = BASE_URL + selector
