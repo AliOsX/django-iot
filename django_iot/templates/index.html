@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
+{% block content %}
+
+<div class="row">
+	<ul class="list-group">
+	{% for device in devices %}
+		<li class="list-group-item" style="background-color: {{ device.hex_string }}">
+			<h3>{{ device.name }} in {{ device.location }}</h3>
+			<dl class="dl-horizontal">
+				<dt>power status</dt>
+				<dd><strong>{{ device.status_message }}</strong> <em>{{ device.status_time|timesince }} ago</em></dd>
+				<dt>color</dt>
+				<dd><strong>{{ device.hex_string }}</strong> <em>{{ device.color_time|timesince }} ago</em></dd>
+				<dt>brightness</dt>
+				<dd><strong>{{ device.brightness }}%</strong> <em>{{ device.brightness_time|timesince }} ago</em></dd>
+			</dl>
+		</li>
+	{% empty %}
+		<li class="list-group-item">( no devices to show )</li>
+	{% endfor %}
+	</ul>
+</div>
+
+<div class="row">
+	<div class="well">
+		<h1>Tweet your vote with hashtag {{ vote.hashtag }}</h1>
+		<h3>Choices: {{ vote.choices|join:', ' }}</h3>
+		<h3>Example tweet: Muahaha imma vote twice {{ vote.choices|random }} {{ vote.choices|random }} {{ vote.hashtag }}</h3>
+	</div>
+</div>
+
+{% if vote.tallies %}
+<div class="row">
+	<div class="col-sm-3">
+		<dl class="dl-horizontal">
+			{% for choice, n_votes in vote.tallies %}
+				<dt>{{choice}}</dt><dd>{{n_votes}}</dd>
+			{% endfor %}
+		</dl>
+	</div>
+	<div class="col-sm-9">
+		<ul>
+		{% for line in vote.log %}
+			<li>{{line|linebreaksbr}}</li>
+		{% endfor %}
+		</ul>
+	</div>
+</div>
+{% endif %}
+
+{% endblock %}

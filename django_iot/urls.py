@@ -15,18 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from rest_framework import routers
-from django_iot.apps.observations.views import AttributeViewSet, PowerStatusViewSet
-
-
-router = routers.DefaultRouter()
-router.register(r'attributes', AttributeViewSet)
-router.register(r'statuses', PowerStatusViewSet)
+from django_iot.apps.interactions.views import home
 
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^api/', include(router.urls)),
-    url(r'^interactions/', include('django_iot.apps.interactions.urls')),
-    url(r'^devices/', include('django_iot.apps.devices.urls')),
+    url(r'^$', home, name='home'),
 ]

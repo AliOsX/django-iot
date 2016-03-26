@@ -7,11 +7,20 @@ Created from https://github.com/heroku/heroku-django-template/
 LIFX_TOKEN: get from https://cloud.lifx.com/
 
 
+## Twitter setup
+
+Sign into https://apps.twitter.com/ with your twitter account, and click "create new app"
+
+
 ## Run locally
 
 ```
-export LIFX_TOKEN=mytoken
 export DATABASE_URL=postgres://localhost/mydbname
+export LIFX_TOKEN=[your value]
+export TWITTER_CONSUMER_KEY=[your value]
+export TWITTER_CONSUMER_SECRET=[your value]
+export TWITTER_ACCESS_TOKEN=[your value]
+export TWITTER_ACCESS_SECRET=[your value]
 createdb mydbname
 python manage.py migrate
 python manage.py createsuperuser

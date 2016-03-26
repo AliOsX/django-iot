@@ -1,35 +1,69 @@
-from django.views.generic.edit import FormView
-from django_iot.apps.interactions import tasks, forms
+from django.shortcuts import render
+from django.core.exceptions import ObjectDoesNotExist
 from django_iot.apps.devices.models import Device
+from django_iot.apps.interactions.models import TwitterVote
 
 
-class BaseInteractionView(FormView):
-    template_name = 'interactions/form.html'
+def home(request):
+    # set up context
+    context = {'devices': [], 'vote': None}
 
-    def form_valid(self, form):
-        # run tasks
-        for task_name in self.task_names:
-            task = getattr(tasks, task_name)
-            task(**form.cleaned_data)
+    # collect info for devices
+    for device in Device.objects.all():
+        # basic data
+        device_data = {
+            'name': device.name,
+            'location': device.location,
+        }
 
-        # set success url using form data
-        device_id = form.cleaned_data['device_id']
-        self.success_url = Device.objects.get(pk=device_id).get_absolute_url()
+        # current status
+        try:
+            current_status = device.powerstatus_set.latest('valid_at')
+            if current_status.is_on:
+                device_data['status_message'] = 'on'
+            else:
+                device_data['status_message'] = 'off'
+            device_data['status_time'] = current_status.valid_at
+        except ObjectDoesNotExist:
+            device_data['status_message'] = '[unknown]'
+            device_data['status_time'] = None
 
-        # return
-        return super(BaseInteractionView, self).form_valid(form)
+        # current color
+        try:
+            current_color = device.color_set.latest('valid_at')
+            device_data['hex_string'] = current_color.hex_string
+            device_data['color_time'] = current_color.valid_at
+        except ObjectDoesNotExist:
+            device_data['hexcolor'] = '[unknown]'
+            device_data['color_time'] = None
 
+        # current brightness
+        try:
+            current_brightness = device.attribute_set.filter(units='brightness').latest('valid_at')
+            device_data['brightness'] = int(current_brightness.value * 100)
+            device_data['brightness_time'] = current_color.valid_at
+        except ObjectDoesNotExist:
+            device_data['brightness'] = '[unknown]'
+            device_data['brightness_time'] = None
 
-class SetStatus(BaseInteractionView):
-    form_class = forms.SetStatusForm
-    task_names = ['set_status']
+        # add to storage
+        context['devices'].append(device_data)
 
+    # latest vote
+    context['vote'] = {
+        'choices': TwitterVote.VOTE_CHOICE_LIST,
+    }
+    try:
+        current_vote = TwitterVote.objects.latest('created_at')
+        tally_count_list = [int(v) for v in current_vote.tally.split(',')]
+        unsorted_tallies = zip(current_vote.VOTE_CHOICE_LIST, tally_count_list)
+        context['vote'].update({
+            'tallies': reversed(sorted(unsorted_tallies, key=lambda x: x[1])),
+            'hashtag': current_vote.hashtag,
+            'log': current_vote.log.split(current_vote.LOG_LINE_SEP),
+        })
+    except ObjectDoesNotExist:
+        pass
 
-class SetColor(BaseInteractionView):
-    form_class = forms.SetColorForm
-    task_names = ['set_attributes']
-
-
-class Refresh(BaseInteractionView):
-    form_class = forms.BaseInteractionForm
-    task_names = ['pull_attributes', 'pull_status']
+    # return
+    return render(request, 'index.html', context)

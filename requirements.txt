@@ -1,13 +1,10 @@
 celery
 dj-database-url==0.4.0
 django-bootstrap3
-djangorestframework
-django-filter
 Django==1.9.2
 gunicorn==19.4.5
 mock
 psycopg2==2.6.1
 tweepy
 requests
-selenium
 whitenoise==2.0.6

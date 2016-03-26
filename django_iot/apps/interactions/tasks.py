@@ -1,9 +1,8 @@
 from django.utils import timezone
 from django_iot.apps.devices.models import Device
 from django_iot.apps.lifx import client
-from celery import shared_task, group
-import tweepy
-import os
+from django_iot.apps.interactions.models import TwitterVote
+from celery import shared_task
 
 
 @shared_task
@@ -122,39 +121,10 @@ def set_attributes(device_id=None, **kwargs):
 
 @shared_task
 def run_twitter_vote(device_id=None, hashtag='#DjangoIoT',
-                     votechoices=None,
                      **kwargs):
-    # set up default choices
-    if not votechoices:
-        votechoices = ['white', 'red', 'orange', 'yellow',
-                       'cyan', 'green', 'blue', 'purple', 'pink']
-
-    # set up twitter
-    auth = tweepy.OAuthHandler(
-        os.environ.get('TWITTER_CONSUMER_KEY'),
-        os.environ.get('TWITTER_CONSUMER_SECRET'))
-    auth.set_access_token(
-        os.environ.get('TWITTER_ACCESS_TOKEN'),
-        os.environ.get('TWITTER_ACCESS_SECRET'),
-    )
-    api = tweepy.API(auth)
-
-    # serach for hashtag
-    results = api.search(q=hashtag, rpp=100)
-
-    # collect votes
-    print '*** votes! ***'
-    vote_counts = {choice: 0 for choice in votechoices}
-    for tweet in results:
-        for choice in votechoices:
-            if choice in tweet.text:
-                vote_counts[choice] += 1
-                print 'at %s %s voted for %s\t(%s)' % (tweet.created_at, tweet.user.screen_name, choice, tweet.text)
-    top_choice, n_votes = max(vote_counts.iteritems(), key=lambda x: x[1])
-    print '*** end of votes! ***'
-    print ''
-    print 'winner is %s with %d votes' % (top_choice, n_votes)
-    print 'full vote tally:', vote_counts
+    # run voting
+    voter = TwitterVote.objects.create(hashtag=hashtag)
+    top_choice, brightness = voter.collect_votes()
 
     # set color based on top vote
-    return set_attributes(device_id, color=top_choice, brightness=n_votes/100.0)
+    return set_attributes(device_id, color=top_choice, brightness=brightness)

@@ -7,7 +7,7 @@ SCHEDULE = {
     },
     'vote_red': {
         'task': 'django_iot.apps.interactions.tasks.run_twitter_vote',
-        'schedule': crontab(minute='*/15'),
+        'schedule': crontab(minute='*/5'),
         'kwargs': {
             'device_id': 1,
             'hashtag': '#red',

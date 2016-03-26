@@ -38,7 +38,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # third party
-    'rest_framework',
     'bootstrap3',
 
     # local apps
@@ -138,14 +137,6 @@ STATICFILES_DIRS = [
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-
-# Django Rest Framework
-# http://www.django-rest-framework.org/api-guide/settings/
-
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100,
-}
 
 
 ########## CELERY CONFIGURATION
