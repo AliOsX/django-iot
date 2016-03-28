@@ -3,6 +3,8 @@
 This is the demo to accompany my talk on [Django for IoT](https://djangocon.eu/speakers/9) at DjangoCon Europe 2016.
 It controls an LIFX light bulb based on Twitter voting.
 
+You can fork this to play around with your own projects, or get started fresh with https://github.com/aschn/cookiecutter-django-iot
+
 # Get started
 
 ## LIFX setup
