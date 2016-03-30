@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.urlresolvers import reverse
 
 
 class BaseAttribute(models.Model):
@@ -28,13 +27,7 @@ class Attribute(BaseAttribute):
     # adding the index is important because it's used for filtering
     units = models.CharField(max_length=10, db_index=True)
 
-    def get_absolute_url(self):
-        return reverse('attribute-detail', kwargs={'pk': self.pk})
-
 
 class PowerStatus(BaseAttribute):
     # true if on, false if off
     is_on = models.BooleanField()
-
-    def get_absolute_url(self):
-        return reverse('powerstatus-detail', kwargs={'pk': self.pk})

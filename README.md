@@ -16,6 +16,7 @@ Sign into https://apps.twitter.com/ with your twitter account, and click "create
 
 ```
 export DATABASE_URL=postgres://localhost/mydbname
+export SECRET_KEY=[your value]
 export LIFX_TOKEN=[your value]
 export TWITTER_CONSUMER_KEY=[your value]
 export TWITTER_CONSUMER_SECRET=[your value]
